@@ -1,0 +1,372 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Name",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "data",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1952,
+        592
+      ],
+      "id": "abc8f92f-94e9-4569-97aa-b2c66bc87301",
+      "name": "On form submission",
+      "webhookId": "8d881940-fb42-4292-a6cf-bf57fa4d2886"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        592
+      ],
+      "id": "39e6c3b7-4363-4585-959d-077b61b18a44",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "Source IP Address",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1488,
+        816
+      ],
+      "id": "61cb0b4c-95f3-4c43-a3ef-faa549c51e17",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        832
+      ],
+      "id": "26f409f2-fc1b-4c91-9369-f57589cebaba"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.deepseek.com/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-a42f2b6dd2854b8fa14b2b9820d2a650"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"deepseek-chat\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are a cybersecurity threat-intelligence engine.\\nAnalyze the following IP address from a network traffic log: {{$csv.ip_address}}\\nReturn ONLY a JSON object:\\n{\\n  \\\"ip\\\": \\\"{{$csv.ip_address}}\\\",\\n  \\\"risk_score\\\": 1-10,\\n  \\\"threat_level\\\": \\\"Low | Medium | High | Critical\\\",\\n  \\\"category\\\": \\\"Public DNS | ISP | VPN | Datacenter | Botnet | C2 Server | Suspicious Host | Normal Host\\\",\\n  \\\"geo\\\": \\\"Country if known\\\",\\n  \\\"summary\\\": \\\"One-sentence threat-intel summary.\\\",\\n  \\\"heatmap_color\\\": \\\"green | yellow | orange | red\\\"\\n}\\nNO text outside the JSON. STRICT JSON only.\"\n    }\n  ]\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -928,
+        384
+      ],
+      "id": "dcbd9e91-ff47-4f2e-8f27-7b6e6446e60d",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5ad527e7-7344-440f-a332-92fcc6f74153",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.deepseek.com/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-a42f2b6dd2854b8fa14b2b9820d2a650"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"deepseek-chat\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        80,
+        544
+      ],
+      "id": "132dfabf-198f-400d-8c51-e2253ffdad95",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -656,
+        32
+      ],
+      "id": "10549b22-f134-49ac-9d9e-81b657c47d80",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me1",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        80
+      ],
+      "id": "6dab9bec-b516-483e-b53d-896985ae9b47"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        16,
+        448
+      ],
+      "id": "63f7c855-8e65-4c49-908a-16e5ea4f724b",
+      "name": "When chat message received",
+      "webhookId": "dc05d4c5-760f-4de4-90c2-aa8172590eb8"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You will receive a list of records in JSON form taken from a CSV file.\n\nHere is the input:\n{{JSON.stringify($json)}}\n\nExtract the IP analysis records from this input and create a table with rows.\nColumns:\n- IP\n- Risk Score\n- Threat Level\n- Heatmap Color\n- Category\n- Summary\n\nSort by highest risk score first.\nOutput only the table.\n\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You will receive a list of records in JSON form taken from a CSV file.\n\nHere is the input:\n{{JSON.stringify($json)}}\n\nExtract the IP analysis records from this input and create a table with rows.\nColumns:\n- IP\n- Risk Score\n- Threat Level\n- Heatmap Color\n- Category\n- Summary\n\nSort by highest risk score first.\nOutput only the table.\n\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -416,
+        448
+      ],
+      "id": "3a3a7853-462c-4443-b62d-cdaa2f56a1b5",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        768
+      ],
+      "id": "194f132a-5441-4c25-87ae-0093f21ab06b",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "o6cS9enr311O6NlC",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1232,
+        720
+      ],
+      "id": "19919823-2bf5-4e68-b0eb-780bec1844e6",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "db1270dc-37d4-4777-a96f-b68ef9600db4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "029b55c8a37f458bd9ec67f2e1631d853f86c3336439f2244b2ca50bc3de1801"
+  },
+  "id": "ZwQqxohAbcrIc73D",
+  "tags": []
+}
